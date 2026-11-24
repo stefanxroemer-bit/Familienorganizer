@@ -158,14 +158,18 @@
   .wd.today{background:var(--card);box-shadow:0 0 0 3px var(--kid),0 8px 20px rgba(59,179,138,.25)}
 
   /* ---------- Familie ---------- */
-  .day{margin-bottom:14px}
-  .dayhead{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:900;margin-bottom:7px}
-  .day.today .dayhead{color:var(--fam)}
-  .ev{display:flex;gap:12px;align-items:center;background:var(--soft);border-radius:16px;padding:10px 12px;margin-bottom:7px}
-  .ev .ic{width:40px;height:40px;border-radius:12px;background:var(--card);display:grid;place-items:center;font-size:22px;flex:none}
-  .ev .n{font-size:17px;font-weight:700;line-height:1.2}
+  /* Termine im gleichen Stil wie Aufgaben: Liste mit Trennlinie, Symbol-Kachel, Zeit rechts */
+  .day{margin-bottom:6px}
+  .day .tgrp{margin-top:10px}.day:first-child .tgrp{margin-top:0}
+  .ev{display:flex;gap:12px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line)}
+  .ev .ic{width:42px;height:42px;border-radius:13px;background:var(--soft);display:grid;place-items:center;font-size:24px;flex:none}
+  .ev .evm{flex:1;min-width:0}
+  .ev .n{display:block;font-size:17px;font-weight:800;line-height:1.25;overflow-wrap:anywhere}
   .ev .meta{display:block;font-size:13px;color:var(--muted);font-weight:700;margin-top:1px}
-  .ev.bday{background:linear-gradient(90deg,#ffe3ea,#fff3d6)}
+  .ev .evt{flex:none;font-size:13px;font-weight:900;color:var(--muted);text-align:right;white-space:nowrap}
+  .ev .evt.now{color:#e07a1f}
+  .ev.past{opacity:.45}
+  .ev.bday{background:linear-gradient(90deg,#ffe3ea,#fff3d6);border-radius:14px;border-bottom-color:transparent;padding-left:8px;padding-right:8px}
   body.night .ev.bday{background:linear-gradient(90deg,#4a2b36,#4a3f2b)}
   .empty{color:var(--muted);font-size:15px;font-weight:700;padding:4px 2px}
 
@@ -956,7 +960,7 @@ function renderFamily() {
     const d = addDays(today, i), evs = eventsOnDay(fam, d);
     if (!evs.length && i > 1) continue;
     const label = i === 0 ? "Heute" : i === 1 ? "Morgen" : d.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "short" });
-    html += `<div class="day ${i === 0 ? "today" : ""}"><div class="dayhead">${label}</div>`;
+    html += `<div class="day"><div class="tgrp ${i === 0 ? "today" : ""}">${label}${evs.length ? `<span class="n">${evs.length}</span>` : ""}</div>`;
     html += evs.length ? evs.map(famEvHtml).join("") : '<div class="empty">Nichts geplant</div>';
     html += "</div>";
   }
@@ -964,10 +968,12 @@ function renderFamily() {
 }
 function famEvHtml(e) {
   const w = splitWho(e.title), p = picFor(w.title, e.allDay ? "🗓️" : todIcon(e.start));
-  const meta = [e.allDay ? "ganztägig" : hhmm(e.start), e.location].filter(Boolean).map(esc).join(" · ");
+  const now = clock(), soon = !e.allDay && e.end > now && e.start - now < 60 * 6e4, past = !e.allDay && e.end <= now;
+  const when = e.allDay ? "ganztägig" : !past && e.start <= now ? "jetzt" : hhmm(e.start);
+  const meta = e.location ? esc(e.location) : "";
   const dot = w.who ? `<span class="pdot ${w.who}" title="${PEOPLE[w.who]}">${PDOT[w.who]}</span>` : "";
-  return `<div class="ev ${isBday(e.title) ? "bday" : ""}"${detAttr(e, p.pic, p.text, w.who)}><span class="ic emo">${p.pic}${dot}</span>
-    <span><span class="n">${esc(p.text)}</span><span class="meta">${meta}</span></span></div>`;
+  return `<div class="ev ${isBday(e.title) ? "bday" : ""} ${past ? "past" : ""}"${detAttr(e, p.pic, p.text, w.who)}><span class="ic emo">${p.pic}${dot}</span>
+    <span class="evm"><span class="n">${esc(p.text)}</span>${meta ? `<span class="meta">📍 ${meta}</span>` : ""}</span><span class="evt ${soon ? "now" : ""}">${esc(when)}</span></div>`;
 }
 
 function renderKid() {
