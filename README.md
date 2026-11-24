@@ -38,6 +38,9 @@ Zum Ausprobieren ohne Konto: `#demo`.
 | `🎾 Tennis` | Emoji am Anfang wird als Symbol genommen (Kind- und Familienkalender) |
 | `S Zahnarzt` · `K Yoga` · `SK Elternabend` (großes S/K, Doppelpunkt optional) | Farbiges Namensschild Stefan, Kiara oder Beide im Familienkalender |
 | Termin auf der Wand antippen | Details mit Titel, Zeit und Ort |
+| Aufgabe mit Emoji beginnen (`🎾 Schläger bespannen`) | Eigenes Symbol in den Todos |
+
+**Bedienung:** Aufgabe nach links wischen = löschen (mit Rückgängig). Oben nach unten ziehen = App neu laden.
 
 ## Update
 
