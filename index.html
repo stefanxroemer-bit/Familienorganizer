@@ -374,7 +374,17 @@
   .famcal .ev .evt{font-size:12px}
   .famcal .pdot,.famtd .pdot{width:17px;height:17px;font-size:10px;left:-4px;bottom:-4px}
   .famcal .scroll{overflow-y:auto;min-height:0;flex:1}
-  .famtd .tin{padding:6px 2px;gap:10px}.famtd .tchk{width:28px;height:28px;font-size:15px}
+  .famtd .tin{padding:6px 2px;gap:10px}
+  .wtdadd{margin:0 0 6px;gap:6px;align-items:center;flex-wrap:wrap}
+  .wtdadd input{min-width:0;flex:1}
+  .wwho{display:none;gap:8px;flex:none;order:3;width:100%;align-items:center;padding:2px 2px 4px}
+  .wwho::before{content:"Für";font-size:13px;font-weight:900;color:var(--muted);margin-right:2px}
+  .wtdadd:focus-within .wwho,.wtdadd.open .wwho{display:flex}
+  .wtdadd .wwho .pdot{position:static;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:900 12px/1 Nunito,sans-serif;color:#fff;border:0;cursor:pointer;opacity:.35;box-shadow:none;padding:0}
+  .wtdadd .wwho .pdot.stefan{background:#4f7cff}.wtdadd .wwho .pdot.kiara{background:#b05cff}.wtdadd .wwho .pdot.beide{background:#8d949b}
+  .wtdadd .wwho .pdot.on{opacity:1;box-shadow:0 0 0 2px var(--card),0 0 0 4px #2c2a33}
+  .wtdadd input{padding:10px 12px;font-size:15px}
+  .wtdadd button[type=submit]{width:44px}.famtd .tchk{width:28px;height:28px;font-size:15px}
 
   .famtd .tdue{font-size:12px}
   .famtd .ttl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -494,7 +504,16 @@
       <div class="wxwarn" id="wxWarn"></div>
       <div class="scroll" id="famList"></div>
     </section>
-    <section class="card famtd" id="famTodos"></section>
+    <section class="card famtd" id="famTodos">
+      <h2>Aufgaben</h2>
+      <form class="add wtdadd" id="wTdAdd" autocomplete="off">
+        <input id="wTdInput" placeholder="Neue Aufgabe …" enterkeyhint="done" maxlength="200">
+        <div class="wwho" id="wTdWho"><button type="button" class="pdot stefan" data-v="stefan" aria-label="Stefan">S</button><button type="button" class="pdot kiara" data-v="kiara" aria-label="Kiara">K</button><button type="button" class="pdot beide on" data-v="beide" aria-label="Beide">👥</button></div>
+        <button type="submit" aria-label="Hinzufügen">+</button>
+      </form>
+      <div class="tdlist" id="famTdList"></div>
+      <div id="famTdMore"></div>
+    </section>
     </div>
     <section class="card shopcard" style="flex:1">
       <h2>Einkaufsliste <span class="netinfo" style="margin-left:auto"></span></h2>
@@ -1630,9 +1649,8 @@ function renderTodos() {
   // Übersicht auf der Wand: überfällig, heute, morgen und ohne Datum (scrollbar), direkt abhakbar
   const wall = todos.filter((t) => !t.done && (!t.due || t.due <= tm)).sort(byDue);
   const later = todos.filter((t) => !t.done && t.due > tm).length;
-  $("famTodos").innerHTML = `<h2>Aufgaben</h2>`
-    + `<div class="tdlist">${wall.length ? wall.map(todoHtml).join("") : `<div class="empty" style="padding:2px 2px 4px"><span class="emo">🎉</span> Nichts offen.</div>`}</div>`
-    + (later > 0 ? `<a class="tdhint" href="#todos" style="display:block;padding:6px 2px 0">+ ${later} später</a>` : "");
+  $("famTdList").innerHTML = wall.length ? wall.map(todoHtml).join("") : `<div class="empty" style="padding:2px 2px 4px"><span class="emo">🎉</span> Nichts offen.</div>`;
+  $("famTdMore").innerHTML = later > 0 ? `<a class="tdhint" href="#todos" style="display:block;padding:6px 2px 0">+ ${later} später</a>` : "";
 }
 function openEdit(id) {
   const t = todos.find((x) => x.id === id); if (!t) return;
@@ -1700,6 +1718,17 @@ $("tdWhen").addEventListener("click", (ev) => {
 $("tdDate").addEventListener("change", () => {
   const on = !!$("tdDate").value; $("tdDateWrap").classList.toggle("on", on);
   if (on) { tdWhen = "date"; segOn("tdWhen", "date"); } else { tdWhen = ""; segOn("tdWhen", ""); }
+});
+// Wand: Aufgabe direkt anlegen (ohne Datum), Person per Kreis wählen
+let wTdWho = "beide";
+$("wTdInput").addEventListener("input", () => $("wTdAdd").classList.toggle("open", !!$("wTdInput").value.trim()));
+$("wTdWho").addEventListener("click", (ev) => {
+  const b = ev.target.closest("[data-v]"); if (!b) return;
+  wTdWho = b.dataset.v; $("wTdWho").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+});
+$("wTdAdd").addEventListener("submit", (ev) => {
+  ev.preventDefault(); const v = $("wTdInput").value.trim(); if (!v) return;
+  addTodo(v, wTdWho); $("wTdInput").value = ""; $("wTdInput").blur(); $("wTdAdd").classList.remove("open"); toast(`Aufgabe angelegt: ${v.slice(0, 40)}`, () => { const last = todos[todos.length - 1]; if (last) deleteTodo(last.id); show("toast", false); });
 });
 // Optionen erst zeigen, wenn man eine Aufgabe tippt
 $("tdAdd").addEventListener("focusin", () => $("tdAdd").classList.add("open"));
