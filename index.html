@@ -208,6 +208,11 @@
   .prog{height:12px;background:var(--soft);border-radius:8px;overflow:hidden;margin:12px 0 14px}
   .prog i{display:block;height:100%;width:0;background:var(--kid);transition:width .3s}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+  .shopsum{display:block;text-decoration:none;color:inherit;background:var(--soft);border-radius:16px;padding:10px 14px;margin-top:4px}
+  .shopsum b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:900}
+  .shopsum span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:16px;font-weight:800;margin:3px 0 2px}
+  .shopsum i{font-style:normal;font-size:13px;font-weight:900;color:var(--accent)}
+  #wChips{margin:2px 0 6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}#wChips .chip{flex:none}#wChips .chip{min-height:38px;padding:7px 13px;font-size:14px}
   .chip{border:0;background:var(--soft);border-radius:999px;padding:9px 15px;font-weight:800;font-size:15px;cursor:pointer;min-height:44px}
   .aisle{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:20px 0 2px;display:flex;gap:8px;align-items:center}
   .aisle .emo{font-size:20px}
@@ -497,6 +502,7 @@
         <input id="addInput" placeholder="Was fehlt?" enterkeyhint="done" maxlength="120">
         <button type="submit" aria-label="Hinzufügen">+</button>
       </form>
+      <div class="chips" id="wChips"></div>
       <div class="scroll" id="shopList"></div>
     </section>
   </div>
@@ -1462,14 +1468,13 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) finis
 const itemHtml = (i) => `<div class="item ${i.done ? "done" : ""}" data-id="${esc(i.id)}"><span class="box">${i.done ? "✓" : ""}</span><span>${esc(i.name)}</span></div>`;
 const byDoneAt = (a, b) => new Date(b.done_at) - new Date(a.done_at);
 function renderItems() { renderWandList(); renderFocus(); }
+// Wand: Eingabe im Vordergrund (Feld + Schnelltasten), die Liste selbst steht im Modus Einkaufen
 function renderWandList() {
-  const open = items.filter((i) => !i.done), done = items.filter((i) => i.done).sort(byDoneAt);
-  let h = open.length ? open.map(itemHtml).join("") : '<div class="empty"><span class="emo">🎉</span> Alles da.</div>';
-  if (done.length) {
-    h += `<div class="donehead"><span>Erledigt (${done.length})</span><button class="link" data-act="clear">Erledigte löschen</button></div>`;
-    h += done.slice(0, 15).map(itemHtml).join("");
-  }
-  $("shopList").innerHTML = h;
+  const open = items.filter((i) => !i.done);
+  $("wChips").innerHTML = quickPicks().map((n) => `<button class="chip" data-add="${esc(n)}">+ ${esc(n)}</button>`).join("");
+  $("shopList").innerHTML = open.length
+    ? `<a class="shopsum" href="#einkaufen"><b>Auf der Liste · ${open.length}</b><span>${open.map((i) => esc(baseName(i.name))).join(" · ")}</span><i>Liste öffnen →</i></a>`
+    : `<a class="shopsum" href="#einkaufen"><b>Liste ist leer</b><i>Einkaufen öffnen →</i></a>`;
 }
 function renderFocus() {
   const open = items.filter((i) => !i.done), done = items.filter((i) => i.done).sort(byDoneAt), total = items.length;
