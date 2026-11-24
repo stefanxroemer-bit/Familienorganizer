@@ -31,6 +31,14 @@ Zum Ausprobieren ohne Konto: `#demo`.
 4. **Öffnen:** Seite am iPhone öffnen, Supabase-Adresse und Publishable Key eingeben (Project Settings → API), einloggen, über Safari „Zum Home-Bildschirm".
 5. **Tablet:** Fully Kiosk, Seite als Startseite, Bewegungserkennung, Start beim Hochfahren, Kiosk-Sperre mit PIN.
 
+## Tipps für Kalendertitel
+
+| Schreibweise | Wirkung |
+| --- | --- |
+| `🎾 Tennis` | Emoji am Anfang wird als Symbol genommen (Kind- und Familienkalender) |
+| `S: Zahnarzt` · `K: Yoga` · `SK: Elternabend` | Farbiges Namensschild Stefan, Kiara oder Beide im Familienkalender |
+| Termin auf der Wand antippen | Details mit Titel, Zeit und Ort |
+
 ## Update
 
 `index.html` im Repo ersetzen → nach ca. 1 Minute live. Geräte laden nachts um 3 Uhr neu.
