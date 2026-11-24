@@ -716,13 +716,15 @@ const sameDay = (a, b) => startOfDay(a).getTime() === startOfDay(b).getTime();
 const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const hhmm = (d) => d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-// Kürzel am Titelanfang: "S: Zahnarzt" (Stefan), "K: Yoga" (Kiara), "SK:" oder "Beide:" (beide)
-const WHO_PREFIX = /^\s*(stefan|kiara|beide|sk|ks|s|k)\s*:\s*/i;
+// Kürzel am Titelanfang: "S Zahnarzt" oder "S: Zahnarzt" (Stefan), "K Yoga" (Kiara), "SK" oder "Beide:" (beide)
+// Ohne Doppelpunkt nur großes S, K oder SK mit Leerzeichen danach (damit normale Wörter nicht zählen)
+const WHO_PREFIX = /^\s*(stefan|kiara|beide|sk|ks|s|k)\s*:\s*/i, WHO_SHORT = /^\s*(SK|KS|S|K)\s+(?=\S)/;
 function splitWho(title) {
-  const t = String(title || ""), m = t.match(WHO_PREFIX);
+  const t = String(title || ""), m = t.match(WHO_PREFIX) || t.match(WHO_SHORT);
   if (!m) return { who: "", title: t };
   const k = m[1].toLowerCase();
-  return { who: /^(s|stefan)$/.test(k) ? "stefan" : /^(k|kiara)$/.test(k) ? "kiara" : "beide", title: t.slice(m[0].length) };
+  const rest = t.slice(m[0].length);
+  return { who: /^(s|stefan)$/.test(k) ? "stefan" : /^(k|kiara)$/.test(k) ? "kiara" : "beide", title: rest.charAt(0).toUpperCase() + rest.slice(1) };
 }
 // Details zum Antippen (Wand): Bild, Titel, wann, wo
 function detAttr(e, pic, title, who = "") {

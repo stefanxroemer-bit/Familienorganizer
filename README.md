@@ -36,7 +36,7 @@ Zum Ausprobieren ohne Konto: `#demo`.
 | Schreibweise | Wirkung |
 | --- | --- |
 | `🎾 Tennis` | Emoji am Anfang wird als Symbol genommen (Kind- und Familienkalender) |
-| `S: Zahnarzt` · `K: Yoga` · `SK: Elternabend` | Farbiges Namensschild Stefan, Kiara oder Beide im Familienkalender |
+| `S Zahnarzt` · `K Yoga` · `SK Elternabend` (großes S/K, Doppelpunkt optional) | Farbiges Namensschild Stefan, Kiara oder Beide im Familienkalender |
 | Termin auf der Wand antippen | Details mit Titel, Zeit und Ort |
 
 ## Update
