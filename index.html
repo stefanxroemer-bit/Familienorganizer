@@ -319,7 +319,8 @@
   .tin{position:relative;display:flex;align-items:center;gap:12px;padding:10px 4px;background:var(--card);touch-action:pan-y;transition:transform .2s}
   .tin.drag{transition:none}
   .tico{position:relative;width:42px;height:42px;border-radius:13px;background:var(--soft);display:grid;place-items:center;font-size:24px;flex:none}
-  .tico .pdot{position:absolute;left:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:900 11px/1 Nunito,sans-serif;color:#fff;box-shadow:0 0 0 2px var(--card)}
+  .ev .ic{position:relative}
+  .ev .ic .pdot,.tico .pdot{position:absolute;left:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:900 11px/1 Nunito,sans-serif;color:#fff;box-shadow:0 0 0 2px var(--card)}
   .pdot.stefan{background:#4f7cff}.pdot.kiara{background:#b05cff}.pdot.beide{background:#8d949b;font-size:10px}
   .tdue{flex:none;font-size:13px;font-weight:900;color:var(--muted);text-align:right;white-space:nowrap}
   .tdue.late{color:#e5484d}.tdue.today{color:#e07a1f}
@@ -928,9 +929,9 @@ function renderFamily() {
 function famEvHtml(e) {
   const w = splitWho(e.title), p = picFor(w.title, e.allDay ? "🗓️" : todIcon(e.start));
   const meta = [e.allDay ? "ganztägig" : hhmm(e.start), e.location].filter(Boolean).map(esc).join(" · ");
-  const chip = w.who ? `<span class="who ${w.who}">${PEOPLE[w.who]}</span> ` : "";
-  return `<div class="ev ${isBday(e.title) ? "bday" : ""}"${detAttr(e, p.pic, p.text, w.who)}><span class="ic emo">${p.pic}</span>
-    <span><span class="n">${esc(p.text)}</span><span class="meta">${chip}${meta}</span></span></div>`;
+  const dot = w.who ? `<span class="pdot ${w.who}" title="${PEOPLE[w.who]}">${PDOT[w.who]}</span>` : "";
+  return `<div class="ev ${isBday(e.title) ? "bday" : ""}"${detAttr(e, p.pic, p.text, w.who)}><span class="ic emo">${p.pic}${dot}</span>
+    <span><span class="n">${esc(p.text)}</span><span class="meta">${meta}</span></span></div>`;
 }
 
 function renderKid() {
