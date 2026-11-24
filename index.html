@@ -360,10 +360,19 @@
   .famtd{margin:0 0 10px}
   .famtd{padding-top:12px;padding-bottom:10px}
   .famtd h2{margin-bottom:4px}
-  .famtd .tin{padding:5px 2px;gap:10px}.famtd .tchk{width:28px;height:28px;font-size:15px}
-  .famtd .tico{width:32px;height:32px;font-size:18px;border-radius:10px}.famtd .pdot{width:16px;height:16px;font-size:9px;left:-4px;bottom:-4px}
+  /* Wand: Termine und Aufgaben nebeneinander, gleich groß, gleiche Zeilen */
+  .adult .adultrow{flex:1.5}
+  .famcal .ev{padding:6px 2px;gap:10px}
+  .famcal .ev .ic,.famtd .tico{width:36px;height:36px;font-size:20px;border-radius:11px}
+  .famcal .ev .n,.famtd .ttl{font-size:15px;line-height:1.2}
+  .famcal .ev .meta,.famtd .tmeta{font-size:12px}
+  .famcal .ev .evt{font-size:12px}
+  .famcal .pdot,.famtd .pdot{width:17px;height:17px;font-size:10px;left:-4px;bottom:-4px}
+  .famcal .scroll{overflow-y:auto;min-height:0;flex:1}
+  .famtd .tin{padding:6px 2px;gap:10px}.famtd .tchk{width:28px;height:28px;font-size:15px}
+
   .famtd .tdue{font-size:12px}
-  .famtd .ttl{font-size:14px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .famtd .ttl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .famtd .tdue{display:none}
   .tdue2{display:none;font-weight:900}.famtd .tdue2{display:inline}
   .tdue2.late{color:#e5484d}.tdue2.today{color:#e07a1f}
@@ -474,14 +483,15 @@
 
   <!-- Erwachsene -->
   <div class="col adult">
-    <section class="card" style="flex:1.15">
+    <div class="adultrow">
+    <section class="card famcal">
       <h2>Termine</h2>
       <div class="wxwarn" id="wxWarn"></div>
       <div class="scroll" id="famList"></div>
     </section>
-    <div class="adultrow">
     <section class="card famtd" id="famTodos"></section>
-    <section class="card shopcard">
+    </div>
+    <section class="card shopcard" style="flex:1">
       <h2>Einkaufsliste <span class="netinfo" style="margin-left:auto"></span></h2>
       <form class="add" id="addForm" autocomplete="off">
         <input id="addInput" placeholder="Was fehlt?" enterkeyhint="done" maxlength="120">
@@ -489,7 +499,6 @@
       </form>
       <div class="scroll" id="shopList"></div>
     </section>
-    </div>
   </div>
 </main>
 
