@@ -471,6 +471,7 @@
   <!-- Erwachsene -->
   <div class="col adult">
     <section class="card" style="flex:1.15">
+      <h2><span class="pill emo" style="background:#e3ecff">📅</span>Termine</h2>
       <div class="wxwarn" id="wxWarn"></div>
       <div class="scroll" id="famList"></div>
     </section>
@@ -976,7 +977,7 @@ function renderKid() {
 
   // Begrüßung
   const h = now.getHours();
-  const [gEmo, gTxt] = h < 11 ? ["🌞", "Guten Morgen"] : h < 17 ? ["👋", "Hallo"] : ["🌙", "Guten Abend"];
+  const [gEmo, gTxt] = h < 5 ? ["🌙", "Gute Nacht"] : h < 11 ? ["🌞", "Guten Morgen"] : h < 17 ? ["☀️", "Guten Tag"] : h < 22 ? ["🌆", "Guten Abend"] : ["🌙", "Gute Nacht"];
   // Ab 18 Uhr zeigt der große Bereich schon den nächsten Tag (Sachen rauslegen)
   const evening = h >= 18, focus = evening ? addDays(today, 1) : today;
   const hello = `<span class="emo">${gEmo}</span>${gTxt}${name ? ", " + esc(name) : ""}!`
