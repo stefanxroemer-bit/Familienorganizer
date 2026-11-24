@@ -259,14 +259,19 @@
   .kopts{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
   .kopt{border:0;background:var(--card);box-shadow:0 0 0 3px var(--line),0 6px 16px rgba(0,0,0,.08);border-radius:24px;min-width:92px;height:84px;padding:0 18px;font-size:42px;font-weight:900;cursor:pointer;color:var(--text)}
   .kopt.small{font-size:28px}
-  .kopt.pic{font-size:56px;min-width:100px;height:100px;padding:0 10px}
   .ksub{font-size:15px;font-weight:800;color:var(--muted);margin-top:-6px}
-  .ktrace{position:relative;flex:1 1 0;min-height:0;max-height:min(320px,72vw);aspect-ratio:1;border-radius:28px;background:var(--soft);touch-action:none}
-  .ktrrow{display:flex;align-items:center;gap:12px}
-  .ktrrow .kopt{min-width:56px;height:52px;font-size:26px;padding:0 12px}
-  .ktrace canvas{width:100%;height:100%;display:block;border-radius:28px;touch-action:none}
-  .kbar{width:min(220px,50vw);height:10px;border-radius:999px;background:var(--soft);overflow:hidden}
-  .kbar i{display:block;height:100%;width:0;background:var(--kid);transition:width .15s}
+  .kopt.pic{height:auto;min-height:104px;padding:8px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .kopt.pic .emo{font-size:52px;line-height:1.1}
+  .kol{font-size:14px;font-weight:800;color:var(--muted);letter-spacing:0}
+  .kmemo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(360px,100%)}
+  .kmemo.c8{grid-template-columns:repeat(4,minmax(0,1fr));width:min(420px,100%)}
+  .mcard{border:0;aspect-ratio:1;border-radius:18px;background:linear-gradient(135deg,#9fdcc0,#6cc4a0);box-shadow:0 4px 12px rgba(0,0,0,.08);cursor:pointer;position:relative;font-family:inherit;transition:transform .2s;padding:0}
+  .mcard .mback{font-size:30px}
+  .mcard .mface{display:none;font-size:40px;font-weight:900;color:var(--text)}
+  .mcard.up{background:var(--card);box-shadow:0 0 0 3px var(--line)}
+  .mcard.up .mback{display:none}.mcard.up .mface{display:inline}
+  .mcard.ok{background:#d9f5e7;box-shadow:0 0 0 3px var(--kid)}
+  body.night .mcard.ok{background:#1f4a3a}
   .kopt.ok{background:#d9f5e7;box-shadow:0 0 0 3px var(--kid)}
   body.night .kopt.ok{background:#1f4a3a}
   .shake{animation:shake .45s}
@@ -502,7 +507,7 @@
           <button class="ktab emo" data-task="read" aria-label="Lesen">🔤</button>
           <button class="ktab emo" data-task="count" aria-label="Zählen">🔢</button>
           <button class="ktab emo" data-task="sound" aria-label="Silben und Reime">👏</button>
-          <button class="ktab emo" data-task="trace" aria-label="Nachspuren">✍️</button>
+          <button class="ktab emo" data-task="memo" aria-label="Memory">🃏</button>
         </div>
         <div class="wletter" id="kLetter" style="margin:0" title="Buchstabe des Tages"></div>
       </div>
@@ -1136,11 +1141,10 @@ const QUOTES = [
   "Nicht geklappt? Nochmal versuchen!", "Freude wächst, wenn man sie teilt.", "Heute machen wir das Beste draus.",
 ];
 // Reimpaare mit Bild (ohne Vorlesen: Kind sagt die Wörter selbst)
-const RHYMES = [
-  [["🐭", "Maus"], ["🏠", "Haus"]], [["🐰", "Hase"], ["👃", "Nase"]], [["🐟", "Fisch"], ["🪑", "Tisch"]], [["🐮", "Kuh"], ["👞", "Schuh"]],
-  [["🐶", "Hund"], ["👄", "Mund"]], [["🐱", "Katze"], ["🐾", "Tatze"]], [["🌹", "Rose"], ["👖", "Hose"]], [["🦵", "Bein"], ["🐷", "Schwein"]],
-  [["🦔", "Igel"], ["🪞", "Spiegel"]], [["🚀", "Rakete"], ["🎺", "Trompete"]], [["🪜", "Leiter"], ["🏇", "Reiter"]], [["🐐", "Ziege"], ["🪰", "Fliege"]],
-  [["👓", "Brille"], ["🦗", "Grille"]], [["🦟", "Mücke"], ["🌉", "Brücke"]], [["☀️", "Sonne"], ["🗑️", "Tonne"]], [["🌲", "Tanne"], ["🫖", "Kanne"]],
+const RHYMES = [ // nur Bilder, die ein Kind eindeutig benennt
+  [["🐭", "Maus"], ["🏠", "Haus"]], [["🐰", "Hase"], ["👃", "Nase"]], [["🐮", "Kuh"], ["👞", "Schuh"]], [["🐶", "Hund"], ["👄", "Mund"]],
+  [["🌹", "Rose"], ["👖", "Hose"]], [["🦵", "Bein"], ["🐷", "Schwein"]], [["🦔", "Igel"], ["🪞", "Spiegel"]], [["🚀", "Rakete"], ["🎺", "Trompete"]],
+  [["🐐", "Ziege"], ["🪰", "Fliege"]], [["🦷", "Zahn"], ["🐓", "Hahn"]], [["🐒", "Affe"], ["🦒", "Giraffe"]], [["🧦", "Socke"], ["🔔", "Glocke"]],
 ];
 function soundTask(k = 0) {
   const lv = levelFor("sound"), r = rng(ymd(clock()) + "|laute|" + lv + "|" + k);
@@ -1153,52 +1157,34 @@ function soundTask(k = 0) {
   const others = shuffle(r, RHYMES.filter((x) => x !== pair).flat()).slice(0, lv === 1 ? 1 : 2);
   return { type: "rhyme", a, opts: shuffle(r, [b, ...others]), ans: b[1] };
 }
-function traceTask(k = 0) {
-  const r = rng(ymd(clock()) + "|spuren|" + k), L = k < 2 ? dayLetter() : pick(r, ALL_LETTERS);
-  return { type: "trace", L: k % 2 === 0 ? L : L.toLowerCase() };
-}
-// Nachspuren: Buchstabe als Vorlage, Finger malt nach. Geschafft bei ~70 % abgedeckt und wenig daneben.
-function setupTrace(t) {
-  const cv = $("trCv"); if (!cv) return;
-  const box = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1, W = Math.round(box.width * dpr);
-  cv.width = cv.height = W;
-  const ctx = cv.getContext("2d"), font = `900 ${Math.round(W * 0.78)}px Nunito, sans-serif`;
-  const mask = document.createElement("canvas"); mask.width = mask.height = W;
-  const m = mask.getContext("2d"); m.font = font; m.textAlign = "center"; m.textBaseline = "middle"; m.fillText(t.L, W / 2, W * 0.54);
-  const data = m.getImageData(0, 0, W, W).data, G = Math.max(4, Math.round(W / 40)), cells = new Set();
-  let start = null;
-  for (let y = 0; y < W; y += G) for (let x = 0; x < W; x += G) if (data[((y + G / 2 | 0) * W + (x + G / 2 | 0)) * 4 + 3] > 128) {
-    cells.add(`${x / G}|${y / G}`); if (!start) start = [x + G / 2, y + G / 2];
+// Memory: Stufe 1 gleiche Bilder, Stufe 2 Groß- und Kleinbuchstabe, Stufe 3 Bild und Anfangsbuchstabe
+function memoTask(k = 0) {
+  const lv = levelFor("memo"), r = rng(ymd(clock()) + "|memory|" + lv + "|" + k), L = dayLetter();
+  const pool = shuffle(r, WORDS.filter((w) => ALL_LETTERS.includes(w[1][0]))), cards = [];
+  if (lv === 1) shuffle(r, pool).slice(0, 3).forEach((w, i) => cards.push({ face: w[0], key: i, emo: true }, { face: w[0], key: i, emo: true }));
+  else if (lv === 2) {
+    const ls = [L, ...shuffle(r, ALL_LETTERS.filter((x) => x !== L))].slice(0, 4);
+    ls.forEach((l, i) => cards.push({ face: l, key: i }, { face: l.toLowerCase(), key: i }));
+  } else {
+    const used = new Set(), ws = [];
+    for (const w of [...pool.filter((w) => w[1][0] === L), ...pool]) { if (!used.has(w[1][0]) && ws.length < 4) { used.add(w[1][0]); ws.push(w); } }
+    ws.forEach((w, i) => cards.push({ face: w[0], key: i, emo: true }, { face: w[1][0], key: i }));
   }
-  const css = getComputedStyle(document.body), guide = css.getPropertyValue("--line").trim() || "#ece2d2";
-  const drawGuide = () => {
-    ctx.clearRect(0, 0, W, W); ctx.font = font; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillStyle = guide; ctx.fillText(t.L, W / 2, W * 0.54);
-    ctx.setLineDash([W / 60, W / 60]); ctx.lineWidth = W / 160; ctx.strokeStyle = "#b9ad99"; ctx.strokeText(t.L, W / 2, W * 0.54); ctx.setLineDash([]);
-    if (start) { ctx.fillStyle = "#3bb38a"; ctx.beginPath(); ctx.arc(start[0], start[1], W / 28, 0, 7); ctx.fill(); }
-  };
-  drawGuide();
-  const hit = new Set(); let inside = 0, outside = 0, last = null, down = false;
-  const R = W * 0.05, bar = $("trBar");
-  const pos = (ev) => { const b = cv.getBoundingClientRect(); return [(ev.clientX - b.left) * W / b.width, (ev.clientY - b.top) * W / b.height]; };
-  const mark = ([x, y]) => {
-    let any = false;
-    for (let dy = -R; dy <= R; dy += G) for (let dx = -R; dx <= R; dx += G) {
-      const k = `${Math.floor((x + dx) / G)}|${Math.floor((y + dy) / G)}`; if (cells.has(k)) { hit.add(k); any = true; }
-    }
-    any ? inside++ : outside++;
-    if (bar) bar.style.width = Math.min(100, Math.round(hit.size / cells.size / 0.7 * 100)) + "%";
-  };
-  const line = (a, b) => { ctx.strokeStyle = "#3bb38a"; ctx.lineWidth = R * 1.6; ctx.lineCap = ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.stroke(); };
-  cv.onpointerdown = (ev) => { down = true; cv.setPointerCapture(ev.pointerId); last = pos(ev); line(last, last); mark(last); };
-  cv.onpointermove = (ev) => { if (!down) return; const p = pos(ev); line(last, p); mark(p); last = p; };
-  cv.onpointerup = cv.onpointercancel = () => {
-    if (!down) return; down = false;
-    const cov = hit.size / cells.size, off = outside / Math.max(1, inside + outside);
-    if (cov >= 0.7 && off < 0.45) solved(cv);
-    else if (off >= 0.45 && inside + outside > 40) { cv.parentElement.classList.remove("shake"); void cv.offsetWidth; cv.parentElement.classList.add("shake"); }
-  };
-  t.reset = () => { hit.clear(); inside = outside = 0; drawGuide(); if (bar) bar.style.width = "0"; };
+  return { type: "memo", cards: shuffle(r, cards), open: [], found: new Set() };
+}
+function memoClick(i) {
+  const t = curTask; if (!t || t.type !== "memo" || t.lock || t.found.has(i) || t.open.includes(i)) return;
+  t.open.push(i); $("kTask").querySelector(`[data-mc="${i}"]`).classList.add("up");
+  if (t.open.length < 2) return;
+  const [a, b] = t.open;
+  if (t.cards[a].key === t.cards[b].key) {
+    t.found.add(a); t.found.add(b); t.open = [];
+    [a, b].forEach((x) => $("kTask").querySelector(`[data-mc="${x}"]`).classList.add("ok"));
+    if (t.found.size === t.cards.length) { curMiss = Math.max(0, curMiss - t.cards.length / 2); solved($("kTask").querySelector(".kmemo")); }
+  } else {
+    t.lock = true; curMiss++;
+    setTimeout(() => { [a, b].forEach((x) => { const el = $("kTask").querySelector(`[data-mc="${x}"]`); if (el) el.classList.remove("up"); }); t.open = []; t.lock = false; }, 1000);
+  }
 }
 
 // Sticker: 2 verschiedene Übungen am Tag
@@ -1209,7 +1195,7 @@ function markDone(task) {
   Object.keys(all).sort().slice(0, -60).forEach((x) => delete all[x]); // nur die letzten 60 Tage behalten
   store.set(LS.stickers, JSON.stringify(all));
 }
-const kinds = (st) => ["read", "count", "sound", "trace"].filter((k) => st[k]).length;
+const kinds = (st) => ["read", "count", "sound", "memo"].filter((k) => st[k]).length;
 const stickerOf = (d) => STICKERS[(d.getDay() + 6) % 7];
 function stickerSlot(d, today) {
   if (d > today) return `<div class="stk"></div>`;
@@ -1250,9 +1236,8 @@ function taskHtml(t) {
     case "word": return `<div class="kpic emo" style="display:grid;place-items:center">${t.w[0]}</div>
       <div class="kopts">${t.opts.map((o) => `<button class="kopt small" data-ans="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
     case "rhyme": return `<div class="kpic emo" style="display:grid;place-items:center">${t.a[0]}</div><div class="ksub">${esc(t.a[1])} reimt sich auf …</div>
-      <div class="kopts">${t.opts.map((o) => `<button class="kopt pic emo" data-ans="${esc(o[1])}" aria-label="${esc(o[1])}">${o[0]}</button>`).join("")}</div>`;
-    case "trace": return `<div class="ktrace"><canvas id="trCv"></canvas></div>
-      <div class="ktrrow"><div class="kbar"><i id="trBar"></i></div><button class="kopt" data-trreset aria-label="Nochmal">↺</button></div>`;
+      <div class="kopts">${t.opts.map((o) => `<button class="kopt pic" data-ans="${esc(o[1])}"><span class="emo">${o[0]}</span><span class="kol">${esc(o[1])}</span></button>`).join("")}</div>`;
+    case "memo": return `<div class="kmemo c${t.cards.length}">${t.cards.map((c, i) => `<button class="mcard" data-mc="${i}"><span class="mback emo">⭐</span><span class="mface ${c.emo ? "emo" : ""}">${esc(c.face)}</span></button>`).join("")}</div>`;
     case "syl": return `<div class="kpic emo" style="display:grid;place-items:center">${t.w[0]}</div><div class="kword" style="font-size:36px">${esc(t.w[1])}</div>
       <div class="kopts">${t.opts.map((o) => `<button class="kopt small" data-ans="${o}">${"👏".repeat(o)}</button>`).join("")}</div>`;
     case "count": return `${objs(t.e, t.n)}<div class="kopts">${t.opts.map((o) => `<button class="kopt" data-ans="${o}">${o}</button>`).join("")}</div>`;
@@ -1273,9 +1258,8 @@ function renderTasks() {
   });
   if (kTab === "routine") { curTask = null; $("kTask").innerHTML = routineHtml(rk); return; }
   const n = +d[kTab] || 0;
-  curTask = { read: readTask, count: countTask, sound: soundTask, trace: traceTask }[kTab](n); curMiss = 0;
+  curTask = { read: readTask, count: countTask, sound: soundTask, memo: memoTask }[kTab](n); curMiss = 0;
   $("kTask").innerHTML = taskHtml(curTask);
-  if (curTask.type === "trace") (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => setupTrace(curTask));
 }
 document.querySelector(".ktabs").addEventListener("click", (ev) => {
   const b = ev.target.closest("[data-task]"); if (!b) return;
@@ -1293,7 +1277,7 @@ $("kTask").addEventListener("click", (ev) => {
   }
   const c = ev.target.closest("[data-cnt]");
   if (c) { c.classList.toggle("t"); return; } // Antippen markiert beim Zählen
-  if (ev.target.closest("[data-trreset]")) { if (curTask && curTask.reset) curTask.reset(); return; }
+  const mc = ev.target.closest("[data-mc]"); if (mc) { memoClick(+mc.dataset.mc); return; }
   const b = ev.target.closest("[data-ans]"); if (!b || !curTask || busy) return;
   if (b.dataset.ans === curTask.ans) solved(b);
   else {
