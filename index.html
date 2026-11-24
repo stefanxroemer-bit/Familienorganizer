@@ -541,6 +541,7 @@
   <form class="dialog" id="setupForm">
     <h3>Einrichtung</h3>
     <p>Einmalig pro Gerät. Werte findest du in Supabase unter Project Settings → API.</p>
+    <p class="err" id="setupErr" style="color:#c0392b;font-weight:800"></p>
     <label>Project URL</label>
     <input id="cfgUrl" placeholder="https://xxxx.supabase.co" required>
     <label>Publishable key (oder anon key)</label>
@@ -1663,12 +1664,26 @@ window.addEventListener("unhandledrejection", (e) => bootErr("Fehler: " + ((e.re
 const withTimeout = (p, ms, what) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(what)), ms))]);
 const hasStoredSession = () => { try { return Object.keys(localStorage).some((k) => /^sb-.*-auth-token$/.test(k)); } catch (e) { return false; } };
 
+// Supabase-Adresse prüfen und reparieren: Leerzeichen, fehlendes https://, Schrägstrich am Ende, nur Projekt-ID
+function normUrl(raw) {
+  let u = String(raw || "").replace(/\s+/g, "").replace(/\/+$/, "");
+  if (/^[a-z0-9]{15,30}$/i.test(u)) u = `https://${u}.supabase.co`;
+  if (u && !/^https?:\/\//i.test(u)) u = "https://" + u;
+  try { const x = new URL(u); return /^https?:$/.test(x.protocol) && x.hostname.includes(".") ? x.origin : ""; } catch (e) { return ""; }
+}
+function showSetup(msg) {
+  $("cfgUrl").value = store.get(LS.url) || ""; $("cfgKey").value = store.get(LS.key) || "";
+  $("setupErr").textContent = msg || ""; show("dlgSetup");
+}
 async function boot() {
   if (/demo/i.test(location.hash) || store.get(LS.demo) === "1") { startDemo(); return; }
-  const url = store.get(LS.url), key = store.get(LS.key);
-  if (!url || !key) { show("dlgSetup"); return; }
+  const raw = store.get(LS.url), key = (store.get(LS.key) || "").trim(), url = normUrl(raw);
+  if (!raw || !key) { showSetup(); return; }
+  if (!url) { showSetup("Gespeicherte Supabase-Adresse ist ungültig. Bitte prüfen und neu speichern."); return; }
+  if (url !== raw) store.set(LS.url, url);
   // lock: iOS-Web-Apps vom Home-Bildschirm können an der Browser-Sperre (navigator.locks) hängen bleiben
-  sb = createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, lock: async (_n, _t, fn) => fn() } });
+  try { sb = createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, lock: async (_n, _t, fn) => fn() } }); }
+  catch (e) { showSetup("Verbindung nicht möglich: " + e.message); return; }
   let session = null;
   try {
     ({ data: { session } } = await withTimeout(sb.auth.getSession(), 8000, "Login-Prüfung dauert zu lange"));
@@ -1702,7 +1717,10 @@ function startApp() {
 
 $("setupForm").addEventListener("submit", (ev) => {
   ev.preventDefault();
-  store.set(LS.url, $("cfgUrl").value.trim().replace(/\/$/, ""));
+  const u = normUrl($("cfgUrl").value);
+  if (!u) { $("setupErr").textContent = "Adresse ungültig. Beispiel: https://abcd1234.supabase.co"; return; }
+  $("setupErr").textContent = "";
+  store.set(LS.url, u);
   store.set(LS.key, $("cfgKey").value.trim());
   if ($("cfgKid").value.trim()) store.set(LS.kid, $("cfgKid").value.trim());
   show("dlgSetup", false); boot();
