@@ -84,6 +84,7 @@
   .kidhero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,211,110,.25)}
   .hello{font-size:26px;font-weight:900;margin:0 0 10px;position:relative;z-index:1}
   .hello .emo{font-size:30px;margin-right:6px}
+  .quote{position:relative;z-index:1;font-size:16px;font-weight:800;color:var(--muted);margin:-4px 0 10px;line-height:1.3}
   .hellorow{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
   .todayrow{display:flex;gap:16px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;position:relative;z-index:1;min-height:150px;padding:4px 2px}
   .bubble{display:flex;flex:none;flex-direction:column;align-items:center;width:132px}
@@ -244,7 +245,7 @@
   #kToday .bubble,#kClothes .cloth,.kweek .we{cursor:pointer}
   .ktask{align-items:center;text-align:center;gap:8px}
   .ktop{display:flex;justify-content:space-between;align-items:center;width:100%;gap:8px}
-  .ktabs{display:flex;gap:8px}
+  .ktabs{display:flex;gap:8px;flex-wrap:wrap}
   .ktab{border:0;background:var(--soft);border-radius:18px;font-size:30px;width:66px;height:58px;cursor:pointer;position:relative}
   .ktab.on{background:var(--card);box-shadow:0 0 0 3px var(--kid)}
   .ktab[data-n]:not([data-n="0"])::after{content:attr(data-n);position:absolute;right:-6px;top:-8px;background:var(--kid);color:#fff;border-radius:999px;
@@ -258,6 +259,14 @@
   .kopts{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
   .kopt{border:0;background:var(--card);box-shadow:0 0 0 3px var(--line),0 6px 16px rgba(0,0,0,.08);border-radius:24px;min-width:92px;height:84px;padding:0 18px;font-size:42px;font-weight:900;cursor:pointer;color:var(--text)}
   .kopt.small{font-size:28px}
+  .kopt.pic{font-size:56px;min-width:100px;height:100px;padding:0 10px}
+  .ksub{font-size:15px;font-weight:800;color:var(--muted);margin-top:-6px}
+  .ktrace{position:relative;flex:1 1 0;min-height:0;max-height:min(320px,72vw);aspect-ratio:1;border-radius:28px;background:var(--soft);touch-action:none}
+  .ktrrow{display:flex;align-items:center;gap:12px}
+  .ktrrow .kopt{min-width:56px;height:52px;font-size:26px;padding:0 12px}
+  .ktrace canvas{width:100%;height:100%;display:block;border-radius:28px;touch-action:none}
+  .kbar{width:min(220px,50vw);height:10px;border-radius:999px;background:var(--soft);overflow:hidden}
+  .kbar i{display:block;height:100%;width:0;background:var(--kid);transition:width .15s}
   .kopt.ok{background:#d9f5e7;box-shadow:0 0 0 3px var(--kid)}
   body.night .kopt.ok{background:#1f4a3a}
   .shake{animation:shake .45s}
@@ -366,7 +375,9 @@
     .weather{padding:6px 12px 6px 8px;gap:8px}.weather .big{font-size:34px}.weather .temp{font-size:24px}
     .weather .sub{font-size:12px;white-space:nowrap}.weather .sub .rain,.sync{display:none}
     main{grid-template-columns:minmax(0,1fr);height:auto;padding:8px 12px 110px}
-    .adult{order:-1}
+    /* Handy-Wand: Hallo, dann Eltern (Kalender, Aufgaben, Einkauf), dann Kinderwoche */
+    .kidzone{display:contents}
+    .kidzone .kidhero{order:0}.adult{order:1}.kidzone .weekcard{order:2}
     .adult .card{flex:none!important}.adultrow{flex-direction:column;flex:none}
 .kidzone .card{flex:none!important}
     #famList{max-height:46vh;overflow-y:auto}
@@ -385,20 +396,22 @@
     #vCook{padding:6px 12px calc(92px + env(safe-area-inset-bottom));height:calc(100dvh - 100px)}
       #vKid{padding:8px 12px 110px;height:auto}
     .kgrid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;padding:8px;border-radius:26px}
-    /* Handy: Woche als Liste (ein Tag pro Zeile), vor dem Lernbereich */
+    /* Handy: Woche als Liste (ein Tag pro Zeile) – Kindermodus und Wand; im Kindermodus vor dem Lernbereich */
     .kweek{order:1;padding:10px}.ktask{order:2}
-    .kweek .week{display:flex;flex-direction:column;gap:8px}
-    .kweek .wd{flex-direction:row;align-items:center;gap:10px;padding:8px 10px;min-height:68px}
-    .kweek .wd .top{width:54px;flex:none;padding:7px 0}
-    .kweek .wd .top b{font-size:18px}
-    .kweek .wd .wxrow{flex-direction:column;gap:0;margin:0;width:38px;flex:none}
-    .kweek .wd .wx{font-size:24px}
-    .kweek .wd .evs{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px 14px;flex:1;min-width:0;align-items:center;justify-content:flex-start;overflow:visible}
-    .kweek .we{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:6px;align-items:center;justify-items:start;max-width:100%}
-    .kweek .we .emo{grid-row:1/3;font-size:32px!important}
-    .kweek .ww{font-size:17px;white-space:nowrap;max-width:none}
-    .kweek .wf{display:block;font-size:11px;text-align:left;-webkit-line-clamp:1;max-width:130px}
-    .kweek .wd .stk{margin:0 0 0 auto;padding:0;font-size:30px;flex:none}
+    .wl .week{display:flex;flex-direction:column;gap:8px}
+    .wl .wd{flex-direction:row;align-items:center;gap:10px;padding:8px 10px;min-height:68px}
+    .wl .wd .top{width:54px;flex:none;padding:7px 0}
+    .wl .wd .top b{font-size:18px}
+    .wl .wd .wxrow{flex-direction:column;gap:0;margin:0;width:38px;flex:none}
+    .wl .wd .wx{font-size:24px}
+    .wl .wd .evs{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px 14px;flex:1;min-width:0;align-items:center;justify-content:flex-start;overflow:visible}
+    .wl .we{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:6px;align-items:center;justify-items:start;max-width:100%}
+    .wl .we .emo{grid-row:1/3;font-size:32px!important}
+    .wl .ww{font-size:17px;white-space:nowrap;max-width:none}
+    .wl .wf{display:block;font-size:11px;text-align:left;-webkit-line-clamp:1;max-width:130px}
+    .wl .wd .stk{margin:0 0 0 auto;padding:0;font-size:30px;flex:none}
+    #kidWeek .we{display:grid}#kidWeek .wd .evs .emo{font-size:30px}
+    #kidWeek .ww{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px;color:var(--text);font-size:15px;text-align:left}
     .ktask{min-height:440px}
     .kobjs{grid-template-columns:repeat(5,52px)}.kobj{font-size:38px}
     .modes button{padding:6px 6px}
@@ -438,13 +451,14 @@
   <div class="col kidzone">
     <section class="card kidhero">
       <div class="hellorow" id="kidzoneHello"><div class="hello" id="hello"></div><div class="wletter" id="wLetter" title="Buchstabe des Tages"></div></div>
+      <div class="quote" id="wQuote"></div>
       <div class="todayrow" id="kidToday"></div>
       <div class="wear">
         <div class="lbl" id="wearLbl">Heute anziehen</div>
         <div class="clothes" id="clothes"></div>
       </div>
     </section>
-    <section class="card weekcard" style="flex:1;padding:12px">
+    <section class="card weekcard wl" style="flex:1;padding:12px">
       <div class="week" id="kidWeek"></div>
     </section>
   </div>
@@ -474,6 +488,7 @@
   <div class="kgrid">
     <section class="card kidhero khero">
       <div class="hellorow"><div class="hello" id="kHello"></div></div>
+      <div class="quote" id="kQuote"></div>
       <div class="todayrow" id="kToday"></div>
       <div class="wear">
         <div class="lbl" id="kWearLbl">Heute anziehen</div>
@@ -486,12 +501,14 @@
           <button class="ktab emo hidden" data-task="routine" id="kRoutineTab" aria-label="Routine">🌅</button>
           <button class="ktab emo" data-task="read" aria-label="Lesen">🔤</button>
           <button class="ktab emo" data-task="count" aria-label="Zählen">🔢</button>
+          <button class="ktab emo" data-task="sound" aria-label="Silben und Reime">👏</button>
+          <button class="ktab emo" data-task="trace" aria-label="Nachspuren">✍️</button>
         </div>
         <div class="wletter" id="kLetter" style="margin:0" title="Buchstabe des Tages"></div>
       </div>
       <div class="kstage" id="kTask"></div>
     </section>
-    <section class="card kweek"><div class="week" id="kWeek"></div></section>
+    <section class="card kweek wl"><div class="week" id="kWeek"></div></section>
   </div>
 </section>
 
@@ -613,7 +630,7 @@
     <input id="setKid">
     <label>Ort fürs Wetter (Breite, Länge)</label>
     <input id="setLoc" placeholder="51.2217, 6.7762">
-    <label>Lernstufe im Kindermodus</label>
+    <label>Lernstufe im Kindermodus (Start, passt sich danach selbst an)</label>
     <select id="setLevel">
       <option value="1">Stufe 1 · Anlaut aus 3 Buchstaben, zählen bis 5</option>
       <option value="2">Stufe 2 · Anlaut aus 4 (auch M/N, B/P), zählen bis 10</option>
@@ -646,7 +663,7 @@ import ICAL from "https://cdn.jsdelivr.net/npm/ical.js@2/+esm";
 
 const $ = (id) => document.getElementById(id);
 const LS = { url: "ft_url", key: "ft_key", kid: "ft_kid", loc: "ft_loc", demo: "ft_demo", demoItems: "ft_demo_items", demoTime: "ft_demo_time",
-  cache: "ft_items_cache", queue: "ft_queue", freq: "ft_freq", level: "ft_level", stickers: "ft_stickers",
+  cache: "ft_items_cache", queue: "ft_queue", freq: "ft_freq", level: "ft_level", stickers: "ft_stickers", skill: "ft_skill",
   todosCache: "ft_todos_cache", demoTodos: "ft_demo_todos", me: "ft_me", lastMode: "ft_mode", routine: "ft_routine" };
 const COOK_URL = "https://stefanxroemer-bit.github.io/BakeBook/"; // Römers Küche
 const DEFAULT_LOC = "51.2217, 6.7762"; // Düsseldorf
@@ -960,6 +977,7 @@ function renderKid() {
   const hello = `<span class="emo">${gEmo}</span>${gTxt}${name ? ", " + esc(name) : ""}!`
     + (evening ? ` <span style="font-weight:700;color:var(--muted);font-size:18px">Morgen:</span>` : "");
   $("hello").innerHTML = hello; $("kHello").innerHTML = hello;
+  const q = "✨ " + QUOTES[dayNo(now) % QUOTES.length]; $("wQuote").textContent = q; $("kQuote").textContent = q;
   $("wearLbl").textContent = $("kWearLbl").textContent = evening ? "Morgen anziehen" : "Heute anziehen";
 
   const todays = kid ? eventsOnDay(kid, focus) : [];
@@ -1061,6 +1079,14 @@ const shuffle = (r, a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--
 const dayNo = (d) => Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
 const dayLetter = () => DAY_LETTERS[dayNo(clock()) % DAY_LETTERS.length];
 const level = () => Math.min(3, Math.max(1, +(store.get(LS.level) || 1)));
+// Jede Übung hat ihre eigene Stufe: 3x richtig beim ersten Versuch = schwerer, 3 Fehler = leichter
+const levelFor = (sk) => { const s = getJson(LS.skill, {})[sk]; return s && s.lv ? s.lv : level(); };
+function adapt(sk, ok, firstTry) {
+  const all = getJson(LS.skill, {}), s = all[sk] || { lv: level(), streak: 0, miss: 0 };
+  if (ok) { s.streak = firstTry ? s.streak + 1 : 0; if (s.streak >= 3 && s.lv < 3) { s.lv++; s.streak = 0; s.miss = 0; } }
+  else { s.miss++; s.streak = 0; if (s.miss >= 3) { if (s.lv > 1) s.lv--; s.miss = 0; } }
+  all[sk] = s; store.set(LS.skill, JSON.stringify(all));
+}
 function near(r, ans, k, max) {
   const set = new Set([ans]); let guard = 0;
   while (set.size < k && guard++ < 50) { const c = ans + pick(r, [-2, -1, 1, 2, 3]); if (c >= 1 && c <= max) set.add(c); }
@@ -1069,7 +1095,7 @@ function near(r, ans, k, max) {
 }
 
 function readTask(k = 0) {
-  const r = rng(ymd(clock()) + "|lesen|" + level() + "|" + k), lv = level(), L = dayLetter();
+  const lv = levelFor("read"), r = rng(ymd(clock()) + "|lesen|" + lv + "|" + k), L = dayLetter();
   const own = WORDS.filter((x) => x[1][0] === L);
   const w = own.length && r() < 0.5 ? pick(r, own) : pick(r, WORDS);
   if (lv === 3) {
@@ -1086,7 +1112,7 @@ function readTask(k = 0) {
   return { type: "anlaut", w, opts: shuffle(r, [...opts]), ans: first, cas, prompt: `Womit fängt ${w[1]} an?` };
 }
 function countTask(k = 0) {
-  const r = rng(ymd(clock()) + "|zaehlen|" + level() + "|" + k), lv = level(), [e, label] = pick(r, COUNT_ITEMS);
+  const lv = levelFor("count"), r = rng(ymd(clock()) + "|zaehlen|" + lv + "|" + k), [e, label] = pick(r, COUNT_ITEMS);
   if (lv === 3 && r() < 0.5) {
     const a = 2 + Math.floor(r() * 6); let b = 2 + Math.floor(r() * 6); if (a === b) b = a > 3 ? a - 2 : a + 2;
     return { type: "more", e, a, b, ans: a > b ? "a" : "b", prompt: `Wo sind mehr ${label}?` };
@@ -1096,7 +1122,86 @@ function countTask(k = 0) {
   return { type: "count", e, n, ans: String(n), opts: near(r, n, lv === 1 ? 3 : 4, max), prompt: `Wie viele ${label} siehst du?` };
 }
 
-// Sticker: pro Tag Lesen und Zählen
+// Spruch des Tages (eigene Sätze, wechselt jeden Morgen)
+const QUOTES = [
+  "Heute ist ein guter Tag für etwas Neues.", "Gemeinsam schaffen wir alles.", "Wer lacht, hat mehr vom Tag.", "Kleine Schritte bringen uns weit.",
+  "Sei mutig und probier es aus!", "Ein Lächeln steckt an.", "Freundlich sein macht den Tag heller.", "Heute sammeln wir schöne Momente.",
+  "Du kannst mehr, als du denkst.", "Langsam ist auch schnell genug.", "Zusammen ist alles leichter.", "Neugier ist eine Superkraft.",
+  "Jeder Tag hat etwas Gutes.", "Erst tief atmen, dann loslegen.", "Danke sagen macht froh.", "Wer hilft, wird selbst froh.",
+  "Pausen gehören dazu.", "Heute wird ein bunter Tag.", "Fragen ist klug.", "Üben macht stark.", "Gute Laune ist ansteckend.",
+  "Teilen macht doppelt Freude.", "Probieren geht über Studieren.", "Jeder Anfang ist ein kleines Abenteuer.", "Wir sind ein Team.",
+  "Heute einmal mehr lachen als gestern.", "Draußen wartet ein Abenteuer.", "Mit Geduld wächst alles.", "Auch Regentage haben Pfützen zum Springen.",
+  "Wer zuhört, lernt viel.", "Mut fängt klein an.", "Lieb sein kostet nichts.", "Ein Schritt nach dem anderen.",
+  "Heute tun wir jemandem etwas Gutes.", "Staunen ist erlaubt.", "Fehler zeigen, dass wir üben.", "Du bist genau richtig, wie du bist.",
+  "Nicht geklappt? Nochmal versuchen!", "Freude wächst, wenn man sie teilt.", "Heute machen wir das Beste draus.",
+];
+// Reimpaare mit Bild (ohne Vorlesen: Kind sagt die Wörter selbst)
+const RHYMES = [
+  [["🐭", "Maus"], ["🏠", "Haus"]], [["🐰", "Hase"], ["👃", "Nase"]], [["🐟", "Fisch"], ["🪑", "Tisch"]], [["🐮", "Kuh"], ["👞", "Schuh"]],
+  [["🐶", "Hund"], ["👄", "Mund"]], [["🐱", "Katze"], ["🐾", "Tatze"]], [["🌹", "Rose"], ["👖", "Hose"]], [["🦵", "Bein"], ["🐷", "Schwein"]],
+  [["🦔", "Igel"], ["🪞", "Spiegel"]], [["🚀", "Rakete"], ["🎺", "Trompete"]], [["🪜", "Leiter"], ["🏇", "Reiter"]], [["🐐", "Ziege"], ["🪰", "Fliege"]],
+  [["👓", "Brille"], ["🦗", "Grille"]], [["🦟", "Mücke"], ["🌉", "Brücke"]], [["☀️", "Sonne"], ["🗑️", "Tonne"]], [["🌲", "Tanne"], ["🫖", "Kanne"]],
+];
+function soundTask(k = 0) {
+  const lv = levelFor("sound"), r = rng(ymd(clock()) + "|laute|" + lv + "|" + k);
+  if (k % 2 === 0) { // Silben klatschen
+    const pool = WORDS.filter((w) => w[2] <= (lv === 1 ? 2 : lv === 2 ? 3 : 4)), w = pick(r, pool);
+    const opts = lv === 1 ? [1, 2, 3] : w[2] >= 4 ? [2, 3, 4] : [1, 2, 3, 4].slice(0, lv === 2 ? 3 : 4);
+    return { type: "syl", w, opts, ans: String(w[2]) };
+  }
+  const pair = pick(r, RHYMES), [a, b] = r() < 0.5 ? pair : [pair[1], pair[0]];
+  const others = shuffle(r, RHYMES.filter((x) => x !== pair).flat()).slice(0, lv === 1 ? 1 : 2);
+  return { type: "rhyme", a, opts: shuffle(r, [b, ...others]), ans: b[1] };
+}
+function traceTask(k = 0) {
+  const r = rng(ymd(clock()) + "|spuren|" + k), L = k < 2 ? dayLetter() : pick(r, ALL_LETTERS);
+  return { type: "trace", L: k % 2 === 0 ? L : L.toLowerCase() };
+}
+// Nachspuren: Buchstabe als Vorlage, Finger malt nach. Geschafft bei ~70 % abgedeckt und wenig daneben.
+function setupTrace(t) {
+  const cv = $("trCv"); if (!cv) return;
+  const box = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1, W = Math.round(box.width * dpr);
+  cv.width = cv.height = W;
+  const ctx = cv.getContext("2d"), font = `900 ${Math.round(W * 0.78)}px Nunito, sans-serif`;
+  const mask = document.createElement("canvas"); mask.width = mask.height = W;
+  const m = mask.getContext("2d"); m.font = font; m.textAlign = "center"; m.textBaseline = "middle"; m.fillText(t.L, W / 2, W * 0.54);
+  const data = m.getImageData(0, 0, W, W).data, G = Math.max(4, Math.round(W / 40)), cells = new Set();
+  let start = null;
+  for (let y = 0; y < W; y += G) for (let x = 0; x < W; x += G) if (data[((y + G / 2 | 0) * W + (x + G / 2 | 0)) * 4 + 3] > 128) {
+    cells.add(`${x / G}|${y / G}`); if (!start) start = [x + G / 2, y + G / 2];
+  }
+  const css = getComputedStyle(document.body), guide = css.getPropertyValue("--line").trim() || "#ece2d2";
+  const drawGuide = () => {
+    ctx.clearRect(0, 0, W, W); ctx.font = font; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = guide; ctx.fillText(t.L, W / 2, W * 0.54);
+    ctx.setLineDash([W / 60, W / 60]); ctx.lineWidth = W / 160; ctx.strokeStyle = "#b9ad99"; ctx.strokeText(t.L, W / 2, W * 0.54); ctx.setLineDash([]);
+    if (start) { ctx.fillStyle = "#3bb38a"; ctx.beginPath(); ctx.arc(start[0], start[1], W / 28, 0, 7); ctx.fill(); }
+  };
+  drawGuide();
+  const hit = new Set(); let inside = 0, outside = 0, last = null, down = false;
+  const R = W * 0.05, bar = $("trBar");
+  const pos = (ev) => { const b = cv.getBoundingClientRect(); return [(ev.clientX - b.left) * W / b.width, (ev.clientY - b.top) * W / b.height]; };
+  const mark = ([x, y]) => {
+    let any = false;
+    for (let dy = -R; dy <= R; dy += G) for (let dx = -R; dx <= R; dx += G) {
+      const k = `${Math.floor((x + dx) / G)}|${Math.floor((y + dy) / G)}`; if (cells.has(k)) { hit.add(k); any = true; }
+    }
+    any ? inside++ : outside++;
+    if (bar) bar.style.width = Math.min(100, Math.round(hit.size / cells.size / 0.7 * 100)) + "%";
+  };
+  const line = (a, b) => { ctx.strokeStyle = "#3bb38a"; ctx.lineWidth = R * 1.6; ctx.lineCap = ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.stroke(); };
+  cv.onpointerdown = (ev) => { down = true; cv.setPointerCapture(ev.pointerId); last = pos(ev); line(last, last); mark(last); };
+  cv.onpointermove = (ev) => { if (!down) return; const p = pos(ev); line(last, p); mark(p); last = p; };
+  cv.onpointerup = cv.onpointercancel = () => {
+    if (!down) return; down = false;
+    const cov = hit.size / cells.size, off = outside / Math.max(1, inside + outside);
+    if (cov >= 0.7 && off < 0.45) solved(cv);
+    else if (off >= 0.45 && inside + outside > 40) { cv.parentElement.classList.remove("shake"); void cv.offsetWidth; cv.parentElement.classList.add("shake"); }
+  };
+  t.reset = () => { hit.clear(); inside = outside = 0; drawGuide(); if (bar) bar.style.width = "0"; };
+}
+
+// Sticker: 2 verschiedene Übungen am Tag
 const getSt = () => getJson(LS.stickers, {});
 const daySt = (d) => getSt()[ymd(d)] || {};
 function markDone(task) {
@@ -1104,16 +1209,17 @@ function markDone(task) {
   Object.keys(all).sort().slice(0, -60).forEach((x) => delete all[x]); // nur die letzten 60 Tage behalten
   store.set(LS.stickers, JSON.stringify(all));
 }
+const kinds = (st) => ["read", "count", "sound", "trace"].filter((k) => st[k]).length;
 const stickerOf = (d) => STICKERS[(d.getDay() + 6) % 7];
 function stickerSlot(d, today) {
   if (d > today) return `<div class="stk"></div>`;
-  const st = daySt(d), n = (st.read ? 1 : 0) + (st.count ? 1 : 0);
-  if (n === 2) return `<div class="stk emo">${stickerOf(d)}</div>`;
-  if (n === 1) return `<div class="stk emo half" title="Fast geschafft: noch die andere Übung">${stickerOf(d)}</div>`;
+  const n = kinds(daySt(d));
+  if (n >= 2) return `<div class="stk emo">${stickerOf(d)}</div>`;
+  if (n === 1) return `<div class="stk emo half" title="Fast geschafft: noch eine andere Übung">${stickerOf(d)}</div>`;
   return sameDay(d, today) ? `<div class="stk miss"></div>` : `<div class="stk"></div>`;
 }
 
-let kTab = null, curTask = null;
+let kTab = null, curTask = null, curMiss = 0;
 // Morgen- und Abendroutine: Bilder zum Abhaken, nur im jeweiligen Zeitfenster sichtbar
 const ROUTINES = {
   morgen: { from: 6 * 60, to: 10 * 60, emo: "🌅", steps: [["🚽", "Toilette"], ["🪥", "Zähne"], ["👕", "Anziehen"], ["🥣", "Frühstück"], ["🧥", "Jacke, Schuhe"]] },
@@ -1143,6 +1249,10 @@ function taskHtml(t) {
       <div class="kopts">${t.opts.map((o) => `<button class="kopt" data-ans="${o}">${letterLabel(o, t.cas)}</button>`).join("")}</div>`;
     case "word": return `<div class="kpic emo" style="display:grid;place-items:center">${t.w[0]}</div>
       <div class="kopts">${t.opts.map((o) => `<button class="kopt small" data-ans="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+    case "rhyme": return `<div class="kpic emo" style="display:grid;place-items:center">${t.a[0]}</div><div class="ksub">${esc(t.a[1])} reimt sich auf …</div>
+      <div class="kopts">${t.opts.map((o) => `<button class="kopt pic emo" data-ans="${esc(o[1])}" aria-label="${esc(o[1])}">${o[0]}</button>`).join("")}</div>`;
+    case "trace": return `<div class="ktrace"><canvas id="trCv"></canvas></div>
+      <div class="ktrrow"><div class="kbar"><i id="trBar"></i></div><button class="kopt" data-trreset aria-label="Nochmal">↺</button></div>`;
     case "syl": return `<div class="kpic emo" style="display:grid;place-items:center">${t.w[0]}</div><div class="kword" style="font-size:36px">${esc(t.w[1])}</div>
       <div class="kopts">${t.opts.map((o) => `<button class="kopt small" data-ans="${o}">${"👏".repeat(o)}</button>`).join("")}</div>`;
     case "count": return `${objs(t.e, t.n)}<div class="kopts">${t.opts.map((o) => `<button class="kopt" data-ans="${o}">${o}</button>`).join("")}</div>`;
@@ -1163,8 +1273,9 @@ function renderTasks() {
   });
   if (kTab === "routine") { curTask = null; $("kTask").innerHTML = routineHtml(rk); return; }
   const n = +d[kTab] || 0;
-  curTask = kTab === "read" ? readTask(n) : countTask(n);
+  curTask = { read: readTask, count: countTask, sound: soundTask, trace: traceTask }[kTab](n); curMiss = 0;
   $("kTask").innerHTML = taskHtml(curTask);
+  if (curTask.type === "trace") (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => setupTrace(curTask));
 }
 document.querySelector(".ktabs").addEventListener("click", (ev) => {
   const b = ev.target.closest("[data-task]"); if (!b) return;
@@ -1182,18 +1293,23 @@ $("kTask").addEventListener("click", (ev) => {
   }
   const c = ev.target.closest("[data-cnt]");
   if (c) { c.classList.toggle("t"); return; } // Antippen markiert beim Zählen
+  if (ev.target.closest("[data-trreset]")) { if (curTask && curTask.reset) curTask.reset(); return; }
   const b = ev.target.closest("[data-ans]"); if (!b || !curTask || busy) return;
-  if (b.dataset.ans === curTask.ans) {
-    const before = daySt(clock()), had = before.read && before.count;
-    b.classList.add("ok"); markDone(kTab);
-    const after = daySt(clock()), fresh = !had && after.read && after.count;
-    $("kTask").insertAdjacentHTML("beforeend", `<div class="kcheer emo">${fresh ? stickerOf(clock()) : "⭐"}</div>`);
-    busy = true;
-    setTimeout(() => { busy = false; renderAll(); renderTasks(); }, fresh ? 1600 : 900);
-  } else {
+  if (b.dataset.ans === curTask.ans) solved(b);
+  else {
+    curMiss++; adapt(kTab, false);
     b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
   }
 });
+function solved(el) {
+  if (busy) return;
+  const had = kinds(daySt(clock())) >= 2;
+  el.classList.add("ok"); markDone(kTab); adapt(kTab, true, curMiss === 0);
+  const fresh = !had && kinds(daySt(clock())) >= 2;
+  $("kTask").insertAdjacentHTML("beforeend", `<div class="kcheer emo">${fresh ? stickerOf(clock()) : "⭐"}</div>`);
+  busy = true;
+  setTimeout(() => { busy = false; renderAll(); renderTasks(); }, fresh ? 1600 : 900);
+}
 // Antippen liest vor (Heute, Anziehen, Woche, Buchstabe des Tages). Die Übungen bleiben stumm.
 document.addEventListener("click", (ev) => {
   const s = ev.target.closest("#vKid [data-say], .wletter[data-say]");
@@ -1601,7 +1717,7 @@ $("tdAdd").addEventListener("submit", (ev) => {
   const scrolledParent = (n) => { for (; n && n !== document.body; n = n.parentElement) if (n.scrollTop > 0) return true; return false; };
   document.addEventListener("touchstart", (ev) => {
     on = (window.scrollY || document.documentElement.scrollTop) <= 0 && mode !== "cook"
-      && !ev.target.closest(".overlay:not(.hidden), .trow, input, select, textarea") && !scrolledParent(ev.target);
+      && !ev.target.closest(".overlay:not(.hidden), .trow, input, select, textarea, canvas") && !scrolledParent(ev.target);
     y0 = ev.touches[0].clientY; x0 = ev.touches[0].clientX; dy = 0;
   }, { passive: true });
   document.addEventListener("touchmove", (ev) => {
@@ -1871,6 +1987,7 @@ $("btnSettings").onclick = () => {
 $("btnClose").onclick = () => show("dlgSettings", false);
 $("btnSave").onclick = () => {
   store.set(LS.kid, $("setKid").value.trim());
+  if (store.get(LS.level) !== $("setLevel").value) store.set(LS.skill, "{}"); // neue Startstufe für alle Übungen
   store.set(LS.level, $("setLevel").value); renderTodos();
   if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test($("setLoc").value.trim())) store.set(LS.loc, $("setLoc").value.trim());
   if (DEMO) { store.set(LS.demoTime, $("setDemoTime").value); applyDemoTime(); tick(); loadCalendars(); }
