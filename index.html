@@ -475,14 +475,14 @@
   <!-- Erwachsene -->
   <div class="col adult">
     <section class="card" style="flex:1.15">
-      <h2><span class="pill emo" style="background:#e3ecff">📅</span>Termine</h2>
+      <h2>Termine</h2>
       <div class="wxwarn" id="wxWarn"></div>
       <div class="scroll" id="famList"></div>
     </section>
     <div class="adultrow">
     <section class="card famtd" id="famTodos"></section>
     <section class="card shopcard">
-      <h2><span class="pill emo" style="background:#ffe8dd">🛒</span>Einkaufsliste <span class="netinfo" style="margin-left:auto"></span></h2>
+      <h2>Einkaufsliste <span class="netinfo" style="margin-left:auto"></span></h2>
       <form class="add" id="addForm" autocomplete="off">
         <input id="addInput" placeholder="Was fehlt?" enterkeyhint="done" maxlength="120">
         <button type="submit" aria-label="Hinzufügen">+</button>
@@ -525,7 +525,7 @@
 <!-- Todos: Handy ist die Haupteingabe, Tablet die Übersicht -->
 <section id="vTodo" class="hidden">
   <div class="card td">
-    <div class="sf-top"><h2><span class="pill emo" style="background:#e0f5ea">✅</span>Todos</h2><div class="sf-right"><span class="netinfo"></span></div></div>
+    <div class="sf-top"><h2>Todos</h2><div class="sf-right"><span class="netinfo"></span></div></div>
     <form id="tdAdd" autocomplete="off">
       <div class="add" style="margin:0"><input id="tdInput" placeholder="Neue Aufgabe …" maxlength="200" enterkeyhint="done"><button type="submit" aria-label="Hinzufügen">+</button></div>
       <div class="tdopts">
@@ -542,7 +542,7 @@
 <section id="vShop" class="hidden">
   <div class="card sf">
     <div class="sf-top">
-      <h2><span class="pill emo" style="background:#ffe8dd">🛒</span>Einkaufen</h2>
+      <h2>Einkaufen</h2>
       <div class="sf-right"><span class="netinfo"></span><span id="sfCount"></span></div>
     </div>
     <div class="prog"><i id="sfProg"></i></div>
@@ -559,7 +559,7 @@
 <!-- Kochen: Römers Küche -->
 <section id="vCook" class="hidden">
   <div class="cookbar">
-    <h2><span class="pill emo" style="background:#fff1d6">🍳</span>Römers Küche</h2>
+    <h2>Römers Küche</h2>
     <div class="acts">
       <a class="btn" id="cookOpen" target="_blank" rel="noopener">↗ Eigenes Fenster</a>
       <button class="btn" id="cookReload">↻ Neu laden</button>
@@ -762,7 +762,6 @@ function kidWord(title, pic) {
   return KIDWORD[pic] || "";
 }
 const wordHtml = (w) => (w ? `<span class="anl">${esc(w[0])}</span>${esc(w.slice(1))}` : "");
-const todIcon = (d) => { const h = d.getHours(); return h < 12 ? "🌅" : h < 17 ? "🌞" : "🌙"; };
 
 /* ---------- Uhr, Tag/Nacht ---------- */
 function tick() {
@@ -967,13 +966,13 @@ function renderFamily() {
   $("famList").innerHTML = html;
 }
 function famEvHtml(e) {
-  const w = splitWho(e.title), p = picFor(w.title, e.allDay ? "🗓️" : todIcon(e.start));
+  const w = splitWho(e.title), p = picFor(w.title, "");
   const now = clock(), soon = !e.allDay && e.end > now && e.start - now < 60 * 6e4, past = !e.allDay && e.end <= now;
   const when = e.allDay ? "ganztägig" : !past && e.start <= now ? "jetzt" : hhmm(e.start);
   const meta = e.location ? esc(e.location) : "";
   const dot = w.who ? `<span class="pdot ${w.who}" title="${PEOPLE[w.who]}">${PDOT[w.who]}</span>` : "";
   return `<div class="ev ${isBday(e.title) ? "bday" : ""} ${past ? "past" : ""}"${detAttr(e, p.pic, p.text, w.who)}><span class="ic emo">${p.pic}${dot}</span>
-    <span class="evm"><span class="n">${esc(p.text)}</span>${meta ? `<span class="meta">📍 ${meta}</span>` : ""}</span><span class="evt ${soon ? "now" : ""}">${esc(when)}</span></div>`;
+    <span class="evm"><span class="n">${esc(p.text)}</span>${meta ? `<span class="meta">${meta}</span>` : ""}</span><span class="evt ${soon ? "now" : ""}">${esc(when)}</span></div>`;
 }
 
 function renderKid() {
@@ -983,13 +982,13 @@ function renderKid() {
 
   // Begrüßung
   const h = now.getHours();
-  const [gEmo, gTxt] = h < 5 ? ["🌙", "Gute Nacht"] : h < 11 ? ["🌞", "Guten Morgen"] : h < 17 ? ["☀️", "Guten Tag"] : h < 22 ? ["🌆", "Guten Abend"] : ["🌙", "Gute Nacht"];
+  const gTxt = h < 5 ? "Gute Nacht" : h < 11 ? "Guten Morgen" : h < 17 ? "Guten Tag" : h < 22 ? "Guten Abend" : "Gute Nacht";
   // Ab 18 Uhr zeigt der große Bereich schon den nächsten Tag (Sachen rauslegen)
   const evening = h >= 18, focus = evening ? addDays(today, 1) : today;
-  const hello = `<span class="emo">${gEmo}</span>${gTxt}${name ? ", " + esc(name) : ""}!`
+  const hello = `${gTxt}${name ? ", " + esc(name) : ""}!`
     + (evening ? ` <span style="font-weight:700;color:var(--muted);font-size:18px">Morgen:</span>` : "");
   $("hello").innerHTML = hello; $("kHello").innerHTML = hello;
-  const q = "✨ " + QUOTES[dayNo(now) % QUOTES.length]; $("wQuote").textContent = q; $("kQuote").textContent = q;
+  const q = QUOTES[dayNo(now) % QUOTES.length]; $("wQuote").textContent = q; $("kQuote").textContent = q;
   $("wearLbl").textContent = $("kWearLbl").textContent = evening ? "Morgen anziehen" : "Heute anziehen";
 
   const todays = kid ? eventsOnDay(kid, focus) : [];
@@ -998,7 +997,7 @@ function renderKid() {
         const p = picFor(e.title), done = !evening && !e.allDay && e.end < now, kw = kidWord(e.title, p.pic);
         const time = e.allDay ? "" : hhmm(e.start);
         const full = kw && kw.toLowerCase() !== p.text.toLowerCase() ? esc(p.text) : "";
-        return `<div class="bubble ${done ? "done" : ""}" data-say="${esc(kw || p.text)}"${words ? "" : detAttr(e, p.pic, p.text)}><div class="circle emo">${p.pic}${e.allDay ? "" : `<span class="tod emo">${todIcon(e.start)}</span>`}</div>`
+        return `<div class="bubble ${done ? "done" : ""}" data-say="${esc(kw || p.text)}"${words ? "" : detAttr(e, p.pic, p.text)}><div class="circle emo">${p.pic}</div>`
           + (words ? `${kw ? `<div class="kw">${wordHtml(kw)}</div>` : ""}<div class="cap">${[time, kw ? full : esc(p.text)].filter(Boolean).join(" · ")}</div>` : `<div class="cap">${time ? time + " " : ""}${esc(p.text)}</div>`) + `</div>`;
       }).join("")
     : `<div class="bubble" data-say="${kid ? "Freier Tag" : ""}"><div class="circle emo">🏡</div>${words && kid ? `<div class="kw">${wordHtml("Frei")}</div>` : `<div class="cap">${kid ? "Freier Tag" : "Kalender fehlt"}</div>`}</div>`;
@@ -1312,7 +1311,7 @@ document.addEventListener("click", (ev) => {
   const el = ev.target.closest("[data-det]"); if (!el || ev.target.closest("#vKid")) return;
   let d; try { d = JSON.parse(el.dataset.det); } catch (e) { return; }
   $("detPic").textContent = d.p; $("detTitle").textContent = d.t; $("detWhen").textContent = d.w;
-  $("detLoc").textContent = d.l ? "📍 " + d.l : ""; $("detWho").innerHTML = d.who ? `<span class="who ${esc(d.who)}">${esc(PEOPLE[d.who] || "")}</span>` : "";
+  $("detLoc").textContent = d.l || ""; $("detWho").innerHTML = d.who ? `<span class="who ${esc(d.who)}">${esc(PEOPLE[d.who] || "")}</span>` : "";
   show("dlgDet"); clearTimeout(detTimer); detTimer = setTimeout(() => show("dlgDet", false), 30000);
 });
 $("detClose").onclick = () => show("dlgDet", false);
@@ -1581,12 +1580,12 @@ function todoPic(title) {
   if (m) return { pic: m[0].trim().split(/\s+/)[0], text: t.slice(m[0].length).trim() || t };
   const low = t.toLowerCase();
   for (const [re, e] of TODO_PICS) if (re.test(low)) return { pic: e, text: t };
-  return picFor(t, "📝");
+  return picFor(t, "");
 }
 const PDOT = { stefan: "S", kiara: "K", beide: "👥" };
 const todoHtml = (t) => {
   const tk = todayKey(), late = t.due && t.due < tk && !t.done, today = t.due === tk && !t.done, p = todoPic(t.title);
-  const due = t.done ? "" : t.due ? `${late ? "⚠ " : ""}${dueLabel(t.due)}` : "";
+  const due = t.done ? "" : t.due ? dueLabel(t.due) : "";
   return `<div class="trow ${t.done ? "done" : ""}" data-tid="${esc(t.id)}"><div class="tdel">🗑️ Löschen</div><div class="tin">`
     + `<button class="tchk" data-tchk aria-label="Erledigt">${t.done ? "✓" : ""}</button>`
     + `<div class="tico emo" data-tedit>${p.pic}<span class="pdot ${esc(t.assignee)}" title="${PEOPLE[t.assignee] || "Beide"}">${PDOT[t.assignee] || "👥"}</span></div>`
@@ -1617,7 +1616,7 @@ function renderTodos() {
   // Übersicht auf der Wand: überfällig, heute, morgen und ohne Datum (scrollbar), direkt abhakbar
   const wall = todos.filter((t) => !t.done && (!t.due || t.due <= tm)).sort(byDue);
   const later = todos.filter((t) => !t.done && t.due > tm).length;
-  $("famTodos").innerHTML = `<h2><span class="pill emo" style="background:#e0f5ea">✅</span>Aufgaben</h2>`
+  $("famTodos").innerHTML = `<h2>Aufgaben</h2>`
     + `<div class="tdlist">${wall.length ? wall.map(todoHtml).join("") : `<div class="empty" style="padding:2px 2px 4px"><span class="emo">🎉</span> Nichts offen.</div>`}</div>`
     + (later > 0 ? `<a class="tdhint" href="#todos" style="display:block;padding:6px 2px 0">+ ${later} später</a>` : "");
 }
